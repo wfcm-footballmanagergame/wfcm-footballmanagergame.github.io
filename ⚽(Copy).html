@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WFCM - World Football Club Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;700&display=swap');
+
+        :root {
+            --metallic-blue: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #1e40af 100%);
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #334155;
+            --border-color: #334155;
+            --border-active: #3b82f6;
+            --text-light: #f8fafc;
+            --text-muted: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Layout Responsivo */
+        .container-responsive {
+            width: 100%;
+            max-width: 100%;
+            padding: 1rem;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 640px) {
+            .container-responsive {
+                padding: 1.5rem;
+                max-width: 640px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container-responsive {
+                max-width: 768px;
+                padding: 2rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .container-responsive {
+                max-width: 1024px;
+                padding: 2.5rem;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .container-responsive {
+                max-width: 1280px;
+            }
+        }
+
+        /* Tipografia Responsiva */
+        .text-responsive-title {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            line-height: 1.2;
+        }
+
+        @media (min-width: 768px) {
+            .text-responsive-title {
+                font-size: clamp(3rem, 6vw, 5rem);
+            }
+        }
+
+        .text-responsive-subtitle {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            line-height: 1.3;
+        }
+
+        .text-responsive-body {
+            font-size: clamp(0.875rem, 2vw, 1rem);
+        }
+
+        /* Componentes */
+        .metallic-blue {
+            background: var(--metallic-blue);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.5));
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .btn-metallic {
+            background: linear-gradient(180deg, #3b82f6 0%, #1e40af 100%);
+            border: 1px solid #60a5fa;
+            color: white;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-size: clamp(0.875rem, 2vw, 1rem);
+        }
+
+        .btn-metallic:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-metallic:active {
+            transform: translateY(0);
+        }
+
+        /* Cards e Containers */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            .card {
+                padding: 2rem;
+            }
+        }
+
+        .card-hover:hover {
+            border-color: var(--border-active);
+            background: var(--bg-card-hover);
+        }
+
+        /* Loading */
+        .loading-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .loading-bar-fill {
+            height: 100%;
+            background: #3b82f6;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            min-height: 100vh;
+            width: 100%;
+            padding: 1rem;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (min-width: 768px) {
+            .screen {
+                padding: 2rem;
+            }
+        }
+
+        .active-screen {
+            display: flex;
+        }
+
+        /* Grids Responsivos */
+        .grid-responsive {
+            display: grid;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .grid-cols-auto {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .grid-cols-clubs {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        }
+
+        @media (min-width: 768px) {
+            .grid-cols-clubs {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            }
+        }
+
+        /* Tabelas */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            min-width: 600px;
+            width: 100%;
+        }
+
+        /* Campos de Jogo */
+        .field {
+            background-color: #166534;
+            border: 2px solid white;
+            position: relative;
+            height: 300px;
+            width: 100%;
+            max-width: 400px;
+            margin: 1rem auto;
+            border-radius: 4px;
+        }
+
+        @media (min-width: 768px) {
+            .field {
+                height: 400px;
+                max-width: 500px;
+            }
+        }
+
+        /* Animações Suaves */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Scrollbar Personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2563eb;
+        }
+
+        /* Utilitários */
+        .text-balance {
+            text-wrap: balance;
+        }
+
+        .aspect-video {
+            aspect-ratio: 16/9;
+        }
+
+        .h-min-screen {
+            min-height: 100vh;
+        }
+
+        /* Fix para mobile */
+        @media (max-width: 640px) {
+            .mobile-padding {
+                padding: 0.75rem;
+            }
+            
+            .mobile-text-center {
+                text-align: center;
+            }
+            
+            .mobile-stack {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <!-- Menu Principal -->
+    <div id="screen-menu" class="screen active-screen fade-in">
+        <div class="container-responsive text-center">
+            <h1 class="text-responsive-title font-bold metallic-blue mb-8 md:mb-12">
+                WFCM
+            </h1>
+            <div class="grid-responsive max-w-md mx-auto gap-4 md:gap-6">
+                <button onclick="showLoading(5, 'club-selection')" 
+                        class="btn-metallic py-4 text-lg md:text-xl">
+                    Jogar
+                </button>
+                <button onclick="showAbout()" 
+                        class="btn-metallic py-4 text-lg md:text-xl">
+                    Sobre
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela Sobre -->
+    <div id="screen-about" class="screen fade-in">
+        <div class="container-responsive max-w-md">
+            <div class="card border border-blue-500 shadow-xl">
+                <h2 class="text-responsive-subtitle font-bold mb-6 text-center metallic-blue">
+                    World Football Club Manager
+                </h2>
+                <div class="space-y-4 text-responsive-body mb-8">
+                    <p class="text-center text-lg font-semibold">
+                        Versão: teste0.0_0
+                    </p>
+                    <p class="text-muted text-center">
+                        Gerencie seu clube de futebol favorito e conquiste títulos!
+                    </p>
+                </div>
+                <button onclick="goToMenu()" 
+                        class="btn-metallic px-8 py-3 rounded-lg">
+                    Voltar ao Menu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tela Carregamento -->
+    <div id="screen-loading" class="screen fade-in">
+        <div class="container-responsive max-w-md text-center">
+            <h2 id="loading-text" class="text-responsive-subtitle mb-6 italic">
+                Carregando processamento...
+            </h2>
+            <div class="loading-bar-container">
+                <div id="loading-fill" class="loading-bar-fill"></div>
+            </div>
+            <p class="text-muted mt-4 text-sm">
+                Aguarde enquanto preparamos tudo...
+            </p>
+        </div>
+    </div>
+
+    <!-- Seleção de Clubes -->
+    <div id="screen-club-selection" class="screen fade-in">
+        <div class="container-responsive">
+            <h2 class="text-responsive-subtitle font-bold mb-8 text-center text-blue-400">
+                Escolha seu Clube
+            </h2>
+            <div id="club-list" class="grid-responsive grid-cols-clubs gap-4">
+                <!-- Gerado via JS -->
+            </div>
+            <div class="mt-8 text-center">
+                <button onclick="goToMenu()" 
+                        class="btn-metallic max-w-xs mx-auto bg-slate-700 hover:bg-slate-600">
+                    Voltar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lobby do Jogo -->
+    <div id="screen-lobby" class="screen fade-in">
+        <div class="container-responsive max-w-4xl">
+            <div class="card border-l-4 border-blue-500 shadow-xl mb-8 md:mb-10">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div class="text-center md:text-left">
+                        <h2 id="user-club-name" class="text-responsive-subtitle font-bold italic mb-2">
+                            NOME DO TIME
+                        </h2>
+                        <p id="user-stadium" class="text-blue-300 text-lg">
+                            Estádio
+                        </p>
+                    </div>
+                    <div class="text-center md:text-right">
+                        <p class="text-sm uppercase text-slate-400">
+                            Temporada
+                        </p>
+                        <p class="text-2xl md:text-3xl font-bold">
+                            2026
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid-responsive grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <button onclick="openMatchMenu()" 
+                        class="btn-metallic py-8 md:py-10 rounded-2xl text-xl md:text-2xl flex flex-col items-center">
+                    <span>Jogar</span>
+                    <span class="text-xs mt-2 opacity-70">Próxima Partida</span>
+                </button>
+                <button onclick="showStandings()" 
+                        class="btn-metallic py-8 md:py-10 rounded-2xl text-xl md:text-2xl">
+                    Classificação
+                </button>
+                <button onclick="showMyTeam()" 
+                        class="btn-metallic py-8 md:py-10 rounded-2xl text-xl md:text-2xl">
+                    Meu Time
+                </button>
+                <button onclick="showMarket()" 
+                        class="btn-metallic py-8 md:py-10 rounded-2xl text-xl md:text-2xl opacity-50 cursor-not-allowed">
+                    Mercado
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Meu Time -->
+    <div id="screen-my-team" class="screen fade-in">
+        <div class="container-responsive max-w-4xl">
+            <div class="card">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <h2 class="text-responsive-subtitle font-bold">
+                        Gerenciamento de Elenco
+                    </h2>
+                    <div class="flex gap-2">
+                        <button onclick="setFormation('4-3-3')" 
+                                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
+                            4-3-3
+                        </button>
+                        <button onclick="setFormation('4-4-2')" 
+                                class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition">
+                            4-4-2
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="squad-list" class="mb-6 max-h-[50vh] overflow-y-auto pr-2 space-y-2">
+                    <!-- Jogadores aqui -->
+                </div>
+
+                <button onclick="showLobby()" 
+                        class="btn-metallic py-4 rounded-lg">
+                    Voltar ao Lobby
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Classificação -->
+    <div id="screen-standings" class="screen fade-in">
+        <div class="container-responsive max-w-4xl">
+            <div class="card">
+                <h2 class="text-responsive-subtitle font-bold mb-6 text-center">
+                    Tabela Brasileirão 2026
+                </h2>
+                <div class="table-responsive">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b border-slate-700">
+                                <th class="py-3 px-2 md:px-4">Pos</th>
+                                <th class="py-3 px-2 md:px-4">Clube</th>
+                                <th class="py-3 px-2 md:px-4">P</th>
+                                <th class="py-3 px-2 md:px-4">J</th>
+                                <th class="py-3 px-2 md:px-4">V</th>
+                            </tr>
+                        </thead>
+                        <tbody id="standings-body">
+                            <!-- Tabela aqui -->
+                        </tbody>
+                    </table>
+                </div>
+                <button onclick="showLobby()" 
+                        class="btn-metallic py-4 mt-6 md:mt-8 rounded-lg">
+                    Voltar ao Lobby
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Jogar (Match Settings) -->
+    <div id="screen-match-menu" class="screen fade-in">
+        <div class="container-responsive max-w-md">
+            <div class="card border border-blue-500">
+                <h2 class="text-responsive-subtitle font-bold mb-6 text-center italic">
+                    Próximo Jogo
+                </h2>
+                <div id="matchup-info" class="text-center mb-8 py-4 bg-slate-900 rounded-lg">
+                    <!-- Info do jogo -->
+                </div>
+                <div class="space-y-4">
+                    <button onclick="startSimulation()" 
+                            class="btn-metallic py-4 rounded-lg text-xl">
+                        Jogar Partida
+                    </button>
+                    <button onclick="showSettings()" 
+                            class="bg-slate-700 hover:bg-slate-600 py-4 rounded-lg w-full transition">
+                        Configurações
+                    </button>
+                    <button onclick="showLobby()" 
+                            class="text-slate-400 hover:text-white py-2 w-full transition">
+                        Voltar ao Lobby
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Configurações -->
+    <div id="screen-settings" class="screen fade-in">
+        <div class="container-responsive max-w-md">
+            <div class="card">
+                <h2 class="text-responsive-subtitle font-bold mb-6">
+                    Configurações de Jogo
+                </h2>
+                <label class="block mb-4 text-slate-300 text-lg">
+                    Tempo de Simulação:
+                </label>
+                <div class="grid grid-cols-3 gap-3 mb-8">
+                    <button onclick="setSimSpeed(5)" id="speed-5" 
+                            class="py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition">
+                        5s
+                    </button>
+                    <button onclick="setSimSpeed(10)" id="speed-10" 
+                            class="py-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition">
+                        10s
+                    </button>
+                    <button onclick="setSimSpeed(15)" id="speed-15" 
+                            class="py-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition">
+                        15s
+                    </button>
+                </div>
+                <button onclick="openMatchMenu()" 
+                        class="btn-metallic py-4 rounded-lg">
+                    Salvar e Voltar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simulação da Partida -->
+    <div id="screen-sim" class="screen fade-in">
+        <div class="container-responsive max-w-4xl">
+            <div class="card border-2 border-blue-900 shadow-2xl">
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+                    <div id="sim-home-team" 
+                         class="text-xl md:text-2xl font-bold text-center md:text-left">
+                        TIME A
+                    </div>
+                    <div class="bg-black px-6 py-3 rounded-lg border border-slate-700">
+                        <span id="sim-score" class="text-3xl md:text-4xl font-mono text-blue-400">
+                            0 - 0
+                        </span>
+                    </div>
+                    <div id="sim-away-team" 
+                         class="text-xl md:text-2xl font-bold text-center md:text-right">
+                        TIME B
+                    </div>
+                </div>
+
+                <div class="text-center mb-6">
+                    <div id="sim-timer" 
+                         class="text-4xl md:text-5xl font-bold font-mono text-yellow-500">
+                        00:00
+                    </div>
+                    <div id="sim-stadium" 
+                         class="text-sm text-slate-500 uppercase mt-2">
+                        Estádio
+                    </div>
+                </div>
+
+                <div id="sim-events" 
+                     class="h-48 md:h-64 overflow-y-auto bg-black rounded-xl p-4 font-mono text-sm border border-slate-800 mb-6">
+                    <!-- Eventos aparecem aqui -->
+                </div>
+
+                <div id="sim-footer" class="hidden">
+                    <button onclick="showLobby()" 
+                            class="btn-metallic py-4 rounded-xl text-lg">
+                        Finalizar e Voltar ao Lobby
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Database integrada e atualizada
+const GAME_DB = {
+  "database_game": "teste0.0_0",
+  "season": 2026,
+  "clubs": [
+    {
+      "club_info": {
+        "full_name": "Fluminense Football Club",
+        "short_name": "FLU",
+        "stadium": "Maracanã",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 101, "name": "Fábio" },
+          { "id": 102, "name": "Vitor Eudes" },
+          { "id": 103, "name": "Marcelo Pitaluga" }
+        ],
+        "defenders": [
+          { "id": 104, "name": "Samuel Xavier", "position": "Lateral Direito" },
+          { "id": 105, "name": "Guga", "position": "Lateral Direito" },
+          { "id": 106, "name": "Guilherme Arana", "position": "Lateral Esquerdo" },
+          { "id": 107, "name": "Gabriel Fuentes", "position": "Lateral Esquerdo" },
+          { "id": 108, "name": "Renê", "position": "Lateral Esquerdo" },
+          { "id": 109, "name": "Thiago Silva", "position": "Zagueiro Direito" },
+          { "id": 110, "name": "Jemmes", "position": "Zagueiro Direito" },
+          { "id": 111, "name": "Ignácio", "position": "Zagueiro Direito" },
+          { "id": 112, "name": "Igor Rabello", "position": "Zagueiro Esquerdo" },
+          { "id": 113, "name": "Juan Freytes", "position": "Zagueiro Esquerdo" },
+          { "id": 114, "name": "David Schuindt", "position": "Zagueiro Direito" }
+        ],
+        "midfielders": [
+          { "id": 115, "name": "Facundo Bernal", "position": "Volante" },
+          { "id": 116, "name": "Hércules", "position": "Volante / Meia Central" },
+          { "id": 117, "name": "Otávio", "position": "Volante" },
+          { "id": 118, "name": "Martinelli", "position": "Meia Central" },
+          { "id": 119, "name": "Nonato", "position": "Meia Central" },
+          { "id": 120, "name": "Ganso", "position": "Meia Armador" },
+          { "id": 121, "name": "Luciano Acosta", "position": "Meia Atacante / Meia Armador" },
+          { "id": 122, "name": "Rubén Lezcano", "position": "Meia Atacante" },
+          { "id": 123, "name": "Lima", "position": "Meia Central" }
+        ],
+        "forwards": [
+          { "id": 124, "name": "Germán Cano", "position": "Centroavante" },
+          { "id": 125, "name": "Everaldo", "position": "Centroavante" },
+          { "id": 126, "name": "John Kennedy", "position": "Centroavante / Segundo Atacante" },
+          { "id": 127, "name": "Agustín Canobbio", "position": "Ponta Direita / Ponta Esquerda" },
+          { "id": 128, "name": "Yeferson Soteldo", "position": "Ponta Esquerda" },
+          { "id": 129, "name": "Kevin Serna", "position": "Ponta Direita" },
+          { "id": 130, "name": "Keno", "position": "Ponta Esquerda" },
+          { "id": 131, "name": "Santiago Moreno", "position": "Ponta Direita" },
+          { "id": 132, "name": "Lelê", "position": "Centroavante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Associação Chapecoense de Futebol",
+        "short_name": "CHA",
+        "stadium": "Arena Condá",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 201, "name": "Anderson", "notes": "Ex-Atlético-GO" },
+          { "id": 202, "name": "Léo Vieira" },
+          { "id": 203, "name": "Gabriel Werner" }
+        ],
+        "defenders": [
+          { "id": 204, "name": "Marcos Vinícius", "position": "Lateral Direito" },
+          { "id": 205, "name": "Gustavo Talles", "position": "Lateral Direito" },
+          { "id": 206, "name": "Bruno Pacheco", "position": "Lateral Esquerdo", "status": "Reforço 2026" },
+          { "id": 207, "name": "Walter Clar", "position": "Lateral Esquerdo" },
+          { "id": 208, "name": "Mancha", "position": "Lateral Esquerdo" },
+          { "id": 209, "name": "Rafael Thyere", "position": "Zagueiro Direito" },
+          { "id": 210, "name": "Eduardo Doma", "position": "Zagueiro Direito" },
+          { "id": 211, "name": "João Paulo", "position": "Zagueiro Central" },
+          { "id": 212, "name": "Victor Caetano", "position": "Zagueiro Esquerdo" },
+          { "id": 213, "name": "Bressan", "position": "Zagueiro Direito" },
+          { "id": 214, "name": "Jhonnathan", "position": "Zagueiro Esquerdo" }
+        ],
+        "midfielders": [
+          { "id": 215, "name": "Higor Meritão", "position": "Volante" },
+          { "id": 216, "name": "João Vitor", "position": "Volante / Meia Central" },
+          { "id": 217, "name": "Camilo", "position": "Volante" },
+          { "id": 218, "name": "Rafael Carvalheira", "position": "Volante" },
+          { "id": 219, "name": "Jean Carlos", "position": "Meia Armador / Atacante" },
+          { "id": 220, "name": "Robert Santos", "position": "Meia Atacante" },
+          { "id": 221, "name": "Giovanni Augusto", "position": "Meia Armador" },
+          { "id": 222, "name": "Bruno Matias", "position": "Meia Central" },
+          { "id": 223, "name": "Marlon", "position": "Meia Central" }
+        ],
+        "forwards": [
+          { "id": 224, "name": "Yannick Bolasie", "position": "Ponta Esquerda / Centroavante" },
+          { "id": 225, "name": "Perotti", "position": "Centroavante" },
+          { "id": 226, "name": "João Bom", "position": "Centroavante" },
+          { "id": 227, "name": "Ênio", "position": "Ponta Esquerda" },
+          { "id": 228, "name": "Marcinho", "position": "Ponta Direita" },
+          { "id": 229, "name": "Jonathan Palácios", "position": "Ponta Direita / Segundo Atacante" },
+          { "id": 230, "name": "Mailson", "position": "Ponta Esquerda" },
+          { "id": 231, "name": "Neto Pessoa", "position": "Centroavante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Remo Club",
+        "short_name": "REM",
+        "stadium": "Estádio Evandro Almeida",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 301, "name": "Marcelo Rangel" },
+          { "id": 302, "name": "Joãozinho" },
+          { "id": 303, "name": "Igor Vinhas" }
+        ],
+        "defenders": [
+          { "id": 304, "name": "Pedro", "position": "Lateral Esquerdo" },
+          { "id": 305, "name": "Sávio", "position": "Lateral Direito" },
+          { "id": 306, "name": "Marllon", "position": "Zagueiro Direito" },
+          { "id": 307, "name": "Klaus", "position": "Zagueiro Direito" },
+          { "id": 308, "name": "Kawan", "position": "Zagueiro Esquerdo" },
+          { "id": 309, "name": "Léo Andrade", "position": "Zagueiro Esquerdo" },
+          { "id": 310, "name": "Thalisson", "position": "Zagueiro Direito" },
+          { "id": 311, "name": "Kayky Oliveira", "position": "Zagueiro Esquerdo" },
+          { "id": 312, "name": "Tassano", "position": "Zagueiro Central / Direito" }
+        ],
+        "midfielders": [
+          { "id": 313, "name": "Yago Pikachu", "position": "Meia Atacante / Ponta Direita" },
+          { "id": 314, "name": "Zé Ricardo", "position": "Volante" },
+          { "id": 315, "name": "Patrick de Paula", "position": "Meia Central / Volante" },
+          { "id": 316, "name": "Tico", "position": "Volante" },
+          { "id": 317, "name": "Giovanni Pavani", "position": "Meia Armador / Meia Central" },
+          { "id": 318, "name": "Nathan", "position": "Meia Armador" },
+          { "id": 319, "name": "Victor Cantillo", "position": "Volante / Meia Central" },
+          { "id": 320, "name": "Régis", "position": "Meia Armador" },
+          { "id": 321, "name": "Dodô", "position": "Meia Atacante" }
+        ],
+        "forwards": [
+          { "id": 322, "name": "Alef Manga", "position": "Ponta Esquerda / Segundo Atacante" },
+          { "id": 323, "name": "Nico Ferreira", "position": "Ponta Direita" },
+          { "id": 324, "name": "Marrony", "position": "Ponta Esquerda / Centroavante" },
+          { "id": 325, "name": "Diego Hernandez", "position": "Ponta Esquerda / Meia Atacante" },
+          { "id": 326, "name": "João Pedro", "position": "Ponta Direita" },
+          { "id": 327, "name": "Eduardo Melo", "position": "Centroavante" },
+          { "id": 328, "name": "Carlinhos", "position": "Centroavante" },
+          { "id": 329, "name": "Rafael Monti", "position": "Centroavante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Sport Club Internacional",
+        "short_name": "INT",
+        "stadium": "Beira-Rio",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 401, "name": "Sergio Rochet" },
+          { "id": 402, "name": "Anthoni" },
+          { "id": 403, "name": "Ivan" }
+        ],
+        "defenders": [
+          { "id": 404, "name": "Alexandro Bernabei", "position": "Lateral Esquerdo" },
+          { "id": 405, "name": "Bruno Gomes", "position": "Lateral Direito / Volante" },
+          { "id": 406, "name": "Alan Benítez", "position": "Lateral Direito" },
+          { "id": 407, "name": "Braian Aguirre", "position": "Lateral Direito" },
+          { "id": 408, "name": "Gabriel Mercado", "position": "Zagueiro Direito" },
+          { "id": 409, "name": "Juninho", "position": "Zagueiro Esquerdo" },
+          { "id": 410, "name": "Félix Torres", "position": "Zagueiro Direito" },
+          { "id": 411, "name": "Victor Gabriel", "position": "Zagueiro Esquerdo" }
+        ],
+        "midfielders": [
+          { "id": 412, "name": "Alan Patrick", "position": "Meia Atacante (MAT)" },
+          { "id": 413, "name": "Alan Rodriguez", "position": "Meia Central (MC)" },
+          { "id": 414, "name": "Bruno Henrique", "position": "Meia Central (MC)" },
+          { "id": 415, "name": "Ronaldo", "position": "Volante (VOL)" },
+          { "id": 416, "name": "Rodrigo Villagra", "position": "Volante (VOL)" },
+          { "id": 417, "name": "Richard", "position": "Meia Central / Volante" },
+          { "id": 418, "name": "Paulinho Paula", "position": "Meia Central (MC)" },
+          { "id": 419, "name": "Thiago Maia", "position": "Volante (VOL)" },
+          { "id": 420, "name": "Hyoran", "position": "Meia Atacante (MAT)" }
+        ],
+        "forwards": [
+          { "id": 421, "name": "Rafael Borré", "position": "Centroavante (CA)" },
+          { "id": 422, "name": "Johan Carbonero", "position": "Ponta Esquerda (PE)" },
+          { "id": 423, "name": "Vitinho", "position": "Ponta Esquerda / Ponta Direita" },
+          { "id": 424, "name": "Raykkonen", "position": "Centroavante (CA)" },
+          { "id": 425, "name": "Bruno Tabata", "position": "Ponta Direita (PD)" },
+          { "id": 426, "name": "Gustavo Prado", "position": "Ponta Direita / Ponta Esquerda" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Sociedade Esportiva Palmeiras",
+        "short_name": "PAL",
+        "stadium": "Allianz Parque",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 501, "name": "Carlos Miguel" },
+          { "id": 502, "name": "Marcelo Lomba" },
+          { "id": 503, "name": "Aranha" }
+        ],
+        "defenders": [
+          { "id": 504, "name": "Agustín Giay", "position": "Lateral Direito" },
+          { "id": 505, "name": "Khellven", "position": "Lateral Direito" },
+          { "id": 506, "name": "Joaquín Piquerez", "position": "Lateral Esquerdo" },
+          { "id": 507, "name": "Jefté", "position": "Lateral Esquerdo" },
+          { "id": 508, "name": "Gustavo Gómez", "position": "Zagueiro Direito" },
+          { "id": 509, "name": "Murilo", "position": "Zagueiro Esquerdo" },
+          { "id": 510, "name": "Bruno Fuchs", "position": "Zagueiro Direito" },
+          { "id": 511, "name": "Benedetti", "position": "Zagueiro Esquerdo" },
+          { "id": 512, "name": "Igor Rabello", "position": "Zagueiro Direito" }
+        ],
+        "midfielders": [
+          { "id": 513, "name": "Marlon Freitas", "position": "Volante" },
+          { "id": 514, "name": "Emiliano Martínez", "position": "Volante" },
+          { "id": 515, "name": "Lucas Evangelista", "position": "Meia Central" },
+          { "id": 516, "name": "Andreas Pereira", "position": "Meia Atacante" },
+          { "id": 517, "name": "Raphael Veiga", "position": "Meia Armador" },
+          { "id": 518, "name": "Mauricio", "position": "Meia Atacante / Meia Armador" },
+          { "id": 519, "name": "Luis Pacheco", "position": "Volante" },
+          { "id": 520, "name": "Figueiredo", "position": "Meia Central" }
+        ],
+        "forwards": [
+          { "id": 521, "name": "Vitor Roque", "position": "Centroavante" },
+          { "id": 522, "name": "Paulinho", "position": "Ponta Esquerda" },
+          { "id": 523, "name": "Felipe Anderson", "position": "Ponta Direita" },
+          { "id": 524, "name": "Flaco López", "position": "Centroavante" },
+          { "id": 525, "name": "Facundo Torres", "position": "Ponta Direita" },
+          { "id": 526, "name": "Ramón Sosa", "position": "Ponta Esquerda" },
+          { "id": 527, "name": "Luighi", "position": "Centroavante" },
+          { "id": 528, "name": "Allan", "position": "Ponta Direita" },
+          { "id": 529, "name": "Bruno Rodrigues", "position": "Ponta Esquerda" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Santos Futebol Clube",
+        "short_name": "SAN",
+        "stadium": "Vila Belmiro",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 601, "name": "Gabriel Brazão" },
+          { "id": 602, "name": "Diógenes" }
+        ],
+        "defenders": [
+          { "id": 603, "name": "Sousa", "position": "Lateral Esquerdo" },
+          { "id": 604, "name": "Gonzalo Escobar", "position": "Lateral Esquerdo" },
+          { "id": 605, "name": "Kevyson", "position": "Lateral Esquerdo" },
+          { "id": 606, "name": "Vinicius Lira", "position": "Lateral Esquerdo" },
+          { "id": 607, "name": "JP Chermont", "position": "Lateral Direito" },
+          { "id": 608, "name": "Mayke", "position": "Lateral Direito" },
+          { "id": 609, "name": "Igor Vinícius", "position": "Lateral Direito" },
+          { "id": 610, "name": "Nathan", "position": "Lateral Direito" },
+          { "id": 611, "name": "Adonis Frías", "position": "Zagueiro Direito" },
+          { "id": 612, "name": "Zé Ivaldo", "position": "Zagueiro Direito" },
+          { "id": 613, "name": "Alexis Duarte", "position": "Zagueiro Direito" },
+          { "id": 614, "name": "João Basso", "position": "Zagueiro Central / Direito" },
+          { "id": 615, "name": "Luan Peres", "position": "Zagueiro Esquerdo" },
+          { "id": 616, "name": "Alex" , "position": "Zagueiro Esquerdo" }
+        ],
+        "midfielders": [
+          { "id": 617, "name": "Willian Arão", "position": "Volante" },
+          { "id": 618, "name": "João Schmidt", "position": "Volante" },
+          { "id": 619, "name": "Vinicius Balieiro", "position": "Volante" },
+          { "id": 620, "name": "Tomás Rincón", "position": "Volante" },
+          { "id": 621, "name": "Gabriel Menino", "position": "Meia Central" },
+          { "id": 622, "name": "Gabriel Bontempo", "position": "Meia Central" },
+          { "id": 623, "name": "Zé Rafael", "position": "Meia Central / Volante" },
+          { "id": 624, "name": "Neymar", "position": "Meia Atacante / Meia Armador" },
+          { "id": 625, "name": "Thaciano", "position": "Meia Atacante / Meia Central" }
+        ],
+        "forwards": [
+          { "id": 626, "name": "Álvaro Barreal", "position": "Ponta Esquerda" },
+          { "id": 627, "name": "Robinho Junior", "position": "Ponta Esquerda" },
+          { "id": 628, "name": "Guilherme", "position": "Ponta Esquerda" },
+          { "id": 629, "name": "Gustavo Caballero", "position": "Ponta Esquerda" },
+          { "id": 630, "name": "Mateus Xavier", "position": "Ponta Esquerda" },
+          { "id": 631, "name": "Benjamín Rollheiser", "position": "Ponta Direita" },
+          { "id": 632, "name": "Billal Brahimi", "position": "Ponta Direita" },
+          { "id": 633, "name": "Gabriel Barbosa", "position": "Centroavante" },
+          { "id": 634, "name": "Alfredo Morelos", "position": "Centroavante" },
+          { "id": 635, "name": "Lautaro Díaz", "position": "Centroavante / Segundo Atacante" },
+          { "id": 636, "name": "Tiquinho Soares", "position": "Centroavante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Fortaleza Esporte Clube",
+        "short_name": "FOR",
+        "stadium": "Castelão",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 701, "name": "Brenno", "position": "Goleiro" },
+          { "id": 702, "name": "João Ricardo", "position": "Goleiro" },
+          { "id": 703, "name": "Magrão", "position": "Goleiro" },
+          { "id": 704, "name": "Helton Leite", "position": "Goleiro" },
+          { "id": 705, "name": "Vinícius", "position": "Goleiro" }
+        ],
+        "defenders": [
+          { "id": 706, "name": "Weverson", "position": "Lateral Esquerdo" },
+          { "id": 707, "name": "Diogo Barbosa", "position": "Lateral Esquerdo" },
+          { "id": 708, "name": "Mailton", "position": "Lateral Direito" },
+          { "id": 709, "name": "Benjamin Kuscevic", "position": "Zagueiro Central" },
+          { "id": 710, "name": "Marcelo Benevenuto", "position": "Zagueiro Central" },
+          { "id": 711, "name": "Lucas Gazal", "position": "Zagueiro Central" },
+          { "id": 712, "name": "Emanuel Brítez", "position": "Zagueiro Direito" },
+          { "id": 713, "name": "Luan Freitas", "position": "Zagueiro Esquerdo" }
+        ],
+        "midfielders": [
+          { "id": 714, "name": "Ronald", "position": "Volante" },
+          { "id": 715, "name": "Ryan", "position": "Meia Central" },
+          { "id": 716, "name": "Zé Welison", "position": "Meia Central" },
+          { "id": 717, "name": "Lucas Sasha", "position": "Volante" },
+          { "id": 718, "name": "Rodrigo Santos", "position": "Meia Central" },
+          { "id": 719, "name": "Matheus Rossetto", "position": "Meia Atacante" },
+          { "id": 720, "name": "Pierre", "position": "Volante" },
+          { "id": 721, "name": "Lucas Crispim", "position": "Meia Armador" },
+          { "id": 722, "name": "Lucca Prior", "position": "Meia Atacante" }
+        ],
+        "forwards": [
+          { "id": 723, "name": "Moisés", "position": "Ponta Esquerda" },
+          { "id": 724, "name": "Marinho", "position": "Ponta Direita" },
+          { "id": 725, "name": "Adam Bareiro", "position": "Centroavante" },
+          { "id": 726, "name": "Deyverson", "position": "Centroavante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Mirassol Futebol Clube",
+        "short_name": "MIR",
+        "stadium": "Maião",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 801, "name": "Walter", "position": "Goleiro" },
+          { "id": 802, "name": "Alex Muralha", "position": "Goleiro" },
+          { "id": 803, "name": "Thomazella", "position": "Goleiro" }
+        ],
+        "defenders": [
+          { "id": 804, "name": "Lucas Oliveira", "position": "Zagueiro Central" },
+          { "id": 805, "name": "Rodrigues", "position": "Zagueiro Central" },
+          { "id": 806, "name": "Igor Marques", "position": "Zagueiro Central" },
+          { "id": 807, "name": "Willian Machado", "position": "Zagueiro Central" },
+          { "id": 808, "name": "João Victor", "position": "Zagueiro Central" },
+          { "id": 809, "name": "Reinaldo", "position": "Lateral Esquerdo / Zagueiro Esquerdo" },
+          { "id": 810, "name": "Daniel Borges", "position": "Lateral Direito" },
+          { "id": 811, "name": "Lucas Ramon", "position": "Lateral Direito" },
+          { "id": 812, "name": "Felipe Jonatan", "position": "Lateral Esquerdo" }
+        ],
+        "midfielders": [
+          { "id": 813, "name": "Yuri Lara", "position": "Volante" },
+          { "id": 814, "name": "Neto Moura", "position": "Volante / Meia Central" },
+          { "id": 815, "name": "Denilson", "position": "Meia Central" },
+          { "id": 816, "name": "Shaylon", "position": "Meia Atacante / Meia Central" },
+          { "id": 817, "name": "Chico", "position": "Meia Atacante" },
+          { "id": 818, "name": "José Aldo", "position": "Meia Atacante" },
+          { "id": 819, "name": "Lucas Mugni", "position": "Meia Atacante" },
+          { "id": 820, "name": "Eduardo", "position": "Meia Atacante" }
+        ],
+        "forwards": [
+          { "id": 821, "name": "Rodrigo Rodrigues", "position": "Centroavante" },
+          { "id": 822, "name": "Nathan Fogaça", "position": "Centroavante" },
+          { "id": 823, "name": "Renato Marques", "position": "Centroavante" },
+          { "id": 824, "name": "André Luís", "position": "Centroavante" },
+          { "id": 825, "name": "Antonio Galeano", "position": "Ponta Esquerda / Segundo Atacante" },
+          { "id": 826, "name": "Negueba", "position": "Ponta Esquerda" },
+          { "id": 827, "name": "Alesson", "position": "Ponta Direita / Segundo Atacante" },
+          { "id": 828, "name": "Edson Carioca", "position": "Ponta Esquerda / Ponta Direita" },
+          { "id": 829, "name": "Carlos Eduardo", "position": "Ponta Esquerda" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Esporte Clube Bahia",
+        "short_name": "BAH",
+        "stadium": "Arena Fonte Nova",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 901, "name": "Ronaldo", "position": "Goleiro" },
+          { "id": 902, "name": "João Paulo", "position": "Goleiro" },
+          { "id": 903, "name": "Victor", "position": "Goleiro" },
+          { "id": 904, "name": "Fábio", "position": "Goleiro" }
+        ],
+        "defenders": [
+          { "id": 905, "name": "Gilberto", "position": "Lateral Direito" },
+          { "id": 906, "name": "Iago Borduchi", "position": "Lateral Esquerdo" },
+          { "id": 907, "name": "Zé Guilherme", "position": "Lateral Esquerdo" },
+          { "id": 908, "name": "Román Gómez", "position": "Lateral Direito" },
+          { "id": 909, "name": "Luciano Juba", "position": "Lateral Esquerdo / Ponta Direita" },
+          { "id": 910, "name": "David Duarte", "position": "Zagueiro Direito" },
+          { "id": 911, "name": "Marcos Victor", "position": "Zagueiro Direito" },
+          { "id": 912, "name": "Ramos Mingo", "position": "Zagueiro Esquerdo" },
+          { "id": 913, "name": "Luiz Gustavo", "position": "Zagueiro Central" },
+          { "id": 914, "name": "Gabriel Xavier", "position": "Zagueiro Direito" },
+          { "id": 915, "name": "Kanu", "position": "Zagueiro Central / Direito" }
+        ],
+        "midfielders": [
+          { "id": 916, "name": "Everton Ribeiro", "position": "Meia Atacante / Meia Armador" },
+          { "id": 917, "name": "Nicolás Acevedo", "position": "Volante / Meia Central" },
+          { "id": 918, "name": "Rezende", "position": "Volante" },
+          { "id": 919, "name": "Jota", "position": "Volante / Meia Central" },
+          { "id": 920, "name": "Erick", "position": "Meia Central / Volante" },
+          { "id": 921, "name": "Rodrigo Nestor", "position": "Meia Central" },
+          { "id": 922, "name": "Michel Araújo", "position": "Meia Atacante" },
+          { "id": 923, "name": "Caio Alexandre", "position": "Meia Central" },
+          { "id": 924, "name": "Jean Lucas", "position": "Meia Central" },
+          { "id": 925, "name": "Cauly", "position": "Meia Central / Meia Armador" }
+        ],
+        "forwards": [
+          { "id": 926, "name": "Ademir", "position": "Centroavante / Ponta Direita" },
+          { "id": 927, "name": "Erick Pulga", "position": "Ponta Esquerda / Ponta Direita" },
+          { "id": 928, "name": "Willian José", "position": "Centroavante" },
+          { "id": 929, "name": "Kayky", "position": "Ponta Esquerda" },
+          { "id": 930, "name": "Sanabria", "position": "Ponta Direita" },
+          { "id": 931, "name": "Kike Olivera", "position": "Ponta Esquerda / Atacante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Esporte Clube Vitória",
+        "short_name": "VIT",
+        "stadium": "Barradão",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 1001, "name": "Lucas Arcanjo", "position": "Goleiro" },
+          { "id": 1002, "name": "Gabriel", "position": "Goleiro" },
+          { "id": 1003, "name": "Yuri Sena", "position": "Goleiro" },
+          { "id": 1004, "name": "Fintelman", "position": "Goleiro" }
+        ],
+        "defenders": [
+          { "id": 1005, "name": "Riccieli", "position": "Zagueiro Central / Direito" },
+          { "id": 1006, "name": "Matheusinho", "position": "Lateral Direito / Zagueiro" },
+          { "id": 1007, "name": "Felipe Vieira", "position": "Lateral Esquerdo / Lateral Direito" },
+          { "id": 1008, "name": "Guilherme Inácio", "position": "Lateral Esquerdo / Zagueiro" },
+          { "id": 1009, "name": "João Gabriel", "position": "Lateral Esquerdo / Lateral Direito" },
+          { "id": 1010, "name": "Kévin", "position": "Lateral Direito / Zagueiro" }
+        ],
+        "midfielders": [
+          { "id": 1011, "name": "Léo Naldi", "position": "Volante" },
+          { "id": 1012, "name": "Zé Breno", "position": "Meia Central / Volante" },
+          { "id": 1013, "name": "Wendell", "position": "Meia Central / Volante" },
+          { "id": 1014, "name": "Lohan", "position": "Meia Central / Volante" },
+          { "id": 1015, "name": "Pablo", "position": "Meia Atacante / Meia Central" },
+          { "id": 1016, "name": "Filipe Machado", "position": "Meia Atacante / Meia Central" }
+        ],
+        "forwards": [
+          { "id": 1017, "name": "Felipe Cardoso", "position": "Centroavante / Atacante" },
+          { "id": 1018, "name": "Luis Miguel", "position": "Centroavante / Atacante" },
+          { "id": 1019, "name": "Lawan", "position": "Atacante / Centroavante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Coritiba Foot Ball Club",
+        "short_name": "COR",
+        "stadium": "Couto Pereira",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 1101, "name": "Pedro Rangel", "position": "Goleiro" },
+          { "id": 1102, "name": "Lucão", "position": "Goleiro" },
+          { "id": 1103, "name": "Pedro Luccas", "position": "Goleiro" },
+          { "id": 1104, "name": "Benassi", "position": "Goleiro" },
+          { "id": 1105, "name": "Gabriel Leite", "position": "Goleiro" }
+        ],
+        "defenders": [
+          { "id": 1106, "name": "Maicon", "position": "Zagueiro Direito" },
+          { "id": 1107, "name": "Diogo Batista", "position": "Zagueiro Esquerdo / Central" },
+          { "id": 1108, "name": "Tinga", "position": "Lateral Direito" },
+          { "id": 1109, "name": "Bruno Melo", "position": "Lateral Esquerdo / Zagueiro Esquerdo" },
+          { "id": 1110, "name": "Jacy", "position": "Lateral Direito / Zagueiro Direito" }
+        ],
+        "midfielders": [
+          { "id": 1111, "name": "Willian Oliveira", "position": "Volante / Meia Central" },
+          { "id": 1112, "name": "Fernando Sobral", "position": "Volante / Meia Central" },
+          { "id": 1113, "name": "Sebastián Gómez", "position": "Meia Central / Meia Atacante" },
+          { "id": 1114, "name": "Josué", "position": "Meia Central / Meia Atacante" },
+          { "id": 1115, "name": "Wallisson", "position": "Meia Central / Volante" },
+          { "id": 1116, "name": "Lucas Ronier", "position": "Meia Atacante / Atacante" }
+        ],
+        "forwards": [
+          { "id": 1117, "name": "Pedro Rocha", "position": "Centroavante / Atacante" },
+          { "id": 1118, "name": "Breno Lopes", "position": "Ponta Esquerda / Ponta Direita / Atacante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Club Athletico Paranaense",
+        "short_name": "CAP",
+        "stadium": "Ligga Arena",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 1201, "name": "Mycael", "position": "Goleiro" },
+          { "id": 1202, "name": "Santos", "position": "Goleiro" },
+          { "id": 1203, "name": "Matheus Rocha", "position": "Goleiro" },
+          { "id": 1204, "name": "Carlos Eduardo", "position": "Goleiro" }
+        ],
+        "defenders": [
+          { "id": 1205, "name": "Gilberto", "position": "Lateral Direito" },
+          { "id": 1206, "name": "Claudinho", "position": "Lateral Direito" },
+          { "id": 1207, "name": "Madson", "position": "Lateral Direito" },
+          { "id": 1208, "name": "Gastón Benavídez", "position": "Lateral Direito" },
+          { "id": 1209, "name": "Lucas Esquivel", "position": "Lateral Esquerdo" },
+          { "id": 1210, "name": "Léo Derik", "position": "Lateral Esquerdo" },
+          { "id": 1211, "name": "Carlos Terán", "position": "Zagueiro Direito" },
+          { "id": 1212, "name": "Juan Aguirre", "position": "Zagueiro Esquerdo" },
+          { "id": 1213, "name": "Lucas Belezi", "position": "Zagueiro Direito" }
+        ],
+        "midfielders": [
+          { "id": 1214, "name": "Raul", "position": "Volante" },
+          { "id": 1215, "name": "Jadson", "position": "Meia Central" },
+          { "id": 1216, "name": "João Cruz", "position": "Meia Central" },
+          { "id": 1217, "name": "Felipinho", "position": "Meia Central" },
+          { "id": 1218, "name": "Juan Portilla", "position": "Meia Central / Ponta Esquerda" },
+          { "id": 1219, "name": "Giuliano", "position": "Meia Atacante" },
+          { "id": 1220, "name": "Bruno Zapelli", "position": "Meia Atacante" },
+          { "id": 1221, "name": "Alejandro García", "position": "Meia Atacante" },
+          { "id": 1222, "name": "Dudu Kogitzki", "position": "Meia Atacante" }
+        ],
+        "forwards": [
+          { "id": 1223, "name": "Gonzalo Mastriani", "position": "Centroavante" },
+          { "id": 1224, "name": "Alan Kardec", "position": "Centroavante" },
+          { "id": 1225, "name": "Renan Viana", "position": "Centroavante" },
+          { "id": 1226, "name": "Renan Peixoto", "position": "Centroavante" },
+          { "id": 1227, "name": "Kevin Viveros", "position": "Ponta Esquerda" },
+          { "id": 1228, "name": "Leozinho", "position": "Ponta Esquerda" },
+          { "id": 1229, "name": "Isaac", "position": "Ponta Direita" },
+          { "id": 1230, "name": "Luiz Fernando", "position": "Ponta Direita" },
+          { "id": 1231, "name": "Steven Mendoza", "position": "Ponta Direita" },
+          { "id": 1232, "name": "Julimar", "position": "Ponta Direita" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Sport Club Corinthians Paulista",
+        "short_name": "SCCP",
+        "stadium": "Neo Química Arena",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 1301, "name": "Hugo Souza", "position": "Goleiro" },
+          { "id": 1302, "name": "Felipe Longo", "position": "Goleiro" },
+          { "id": 1303, "name": "Kauê", "position": "Goleiro" }
+        ],
+        "defenders": [
+          { "id": 1304, "name": "Matheus Bidu", "position": "Lateral Esquerdo" },
+          { "id": 1305, "name": "Hugo Farias", "position": "Lateral Esquerdo" },
+          { "id": 1306, "name": "Matheuzinho", "position": "Lateral Direito" },
+          { "id": 1307, "name": "Pedro Milans", "position": "Lateral Direito" },
+          { "id": 1308, "name": "João Vitor Jacaré", "position": "Lateral Direito" },
+          { "id": 1309, "name": "Gustavo Henrique", "position": "Zagueiro Direito" },
+          { "id": 1310, "name": "João Pedro Tchoca", "position": "Zagueiro Direito" },
+          { "id": 1311, "name": "Cacá", "position": "Zagueiro Direito" },
+          { "id": 1312, "name": "André Ramalho", "position": "Zagueiro Esquerdo" },
+          { "id": 1313, "name": "Gabriel Paulista", "position": "Zagueiro Esquerdo" }
+        ],
+        "midfielders": [
+          { "id": 1314, "name": "Raniele", "position": "Volante" },
+          { "id": 1315, "name": "Luiz Gustavo Bahia", "position": "Volante" },
+          { "id": 1316, "name": "Charles", "position": "Volante" },
+          { "id": 1317, "name": "André", "position": "Volante" },
+          { "id": 1318, "name": "Breno Bidon", "position": "Meia Central" },
+          { "id": 1319, "name": "André Carrillo", "position": "Meia Central" },
+          { "id": 1320, "name": "Matheus Pereira", "position": "Meia Central" },
+          { "id": 1321, "name": "Rodrigo Garro", "position": "Meia Atacante" }
+        ],
+        "forwards": [
+          { "id": 1322, "name": "Vitinho", "position": "Ponta Esquerda" },
+          { "id": 1323, "name": "Kayke", "position": "Ponta Esquerda" },
+          { "id": 1324, "name": "Dieguinho", "position": "Ponta Direita" },
+          { "id": 1325, "name": "Pedro Raul", "position": "Centroavante" },
+          { "id": 1326, "name": "Yuri Alberto", "position": "Centroavante" },
+          { "id": 1327, "name": "Memphis Depay", "position": "Centroavante" },
+          { "id": 1328, "name": "Gui Negão", "position": "Centroavante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Clube de Regatas do Flamengo",
+        "short_name": "FLA",
+        "stadium": "Maracanã",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 1401, "name": "Agustín Rossi", "position": "Goleiro" },
+          { "id": 1402, "name": "Andrew", "position": "Goleiro" },
+          { "id": 1403, "name": "Dyogo Alves", "position": "Goleiro" }
+        ],
+        "defenders": [
+          { "id": 1404, "name": "Alex Sandro", "position": "Lateral Esquerdo" },
+          { "id": 1405, "name": "Ayrton Lucas", "position": "Lateral Esquerdo" },
+          { "id": 1406, "name": "Guillermo Varela", "position": "Lateral Direito" },
+          { "id": 1407, "name": "Emerson Royal", "position": "Lateral Direito" },
+          { "id": 1408, "name": "Léo Ortiz", "position": "Zagueiro Direito" },
+          { "id": 1409, "name": "Léo Pereira", "position": "Zagueiro Esquerdo" },
+          { "id": 1410, "name": "Vitão", "position": "Zagueiro Direito" },
+          { "id": 1411, "name": "João Victor", "position": "Zagueiro Direito" }
+        ],
+        "midfielders": [
+          { "id": 1412, "name": "Erick Pulgar", "position": "Volante" },
+          { "id": 1413, "name": "Jorginho", "position": "Volante / Meia Central" },
+          { "id": 1414, "name": "Nicolas De La Cruz", "position": "Volante / Meia Central" },
+          { "id": 1415, "name": "Saúl", "position": "Volante / Meia Central" },
+          { "id": 1416, "name": "Allan", "position": "Volante" },
+          { "id": 1417, "name": "Evertton Araújo", "position": "Meia Central" },
+          { "id": 1418, "name": "Giorgian de Arrascaeta", "position": "Meia Atacante / Meia Armador" },
+          { "id": 1419, "name": "Jorge Carrascal", "position": "Meia Atacante" }
+        ],
+        "forwards": [
+          { "id": 1420, "name": "Samuel Lino", "position": "Ponta Esquerda" },
+          { "id": 1421, "name": "Bruno Henrique", "position": "Ponta Esquerda" },
+          { "id": 1422, "name": "Everton Cebolinha", "position": "Ponta Esquerda" },
+          { "id": 1423, "name": "Michael", "position": "Ponta Esquerda" },
+          { "id": 1424, "name": "Luis Araújo", "position": "Ponta Direita" },
+          { "id": 1425, "name": "Gonzalo Plata", "position": "Ponta Direita" },
+          { "id": 1426, "name": "Pedro", "position": "Centroavante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "São Paulo Futebol Clube",
+        "short_name": "SAO",
+        "stadium": "MorumBIS",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 1501, "name": "Rafael" },
+          { "id": 1502, "name": "Young" },
+          { "id": 1503, "name": "Jandrei" }
+        ],
+        "defenders": [
+          { "id": 1504, "name": "Igor Vinícius", "position": "Lateral Direito" },
+          { "id": 1505, "name": "Moreira", "position": "Lateral Direito" },
+          { "id": 1506, "name": "Patryck", "position": "Lateral Esquerdo" },
+          { "id": 1507, "name": "Jamal Lewis", "position": "Lateral Esquerdo" },
+          { "id": 1508, "name": "Arboleda", "position": "Zagueiro Direito" },
+          { "id": 1509, "name": "Alan Franco", "position": "Zagueiro Esquerdo" },
+          { "id": 1510, "name": "Ferraresi", "position": "Zagueiro Direito" },
+          { "id": 1511, "name": "Sabino", "position": "Zagueiro Esquerdo" }
+        ],
+        "midfielders": [
+          { "id": 1512, "name": "Luiz Gustavo", "position": "Volante" },
+          { "id": 1513, "name": "Pablo Maia", "position": "Volante" },
+          { "id": 1514, "name": "Alisson", "position": "Meia Central" },
+          { "id": 1515, "name": "Bobadilla", "position": "Meia Central" },
+          { "id": 1516, "name": "Rodrigo Nestor", "position": "Meia Armador" },
+          { "id": 1517, "name": "Lucas Moura", "position": "Meia Atacante" },
+          { "id": 1518, "name": "Galoppo", "position": "Meia Atacante" }
+        ],
+        "forwards": [
+          { "id": 1519, "name": "Jonathan Calleri", "position": "Centroavante" },
+          { "id": 1520, "name": "Ferreirinha", "position": "Ponta Esquerda" },
+          { "id": 1521, "name": "Erick", "position": "Ponta Direita" },
+          { "id": 1522, "name": "André Silva", "position": "Centroavante" },
+          { "id": 1523, "name": "William Gomes", "position": "Ponta Esquerda" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Grêmio Foot-Ball Porto Alegrense",
+        "short_name": "GRE",
+        "stadium": "Arena do Grêmio",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 1601, "name": "Agustín Marchesín" },
+          { "id": 1602, "name": "Caíque" }
+        ],
+        "defenders": [
+          { "id": 1603, "name": "João Pedro", "position": "Lateral Direito" },
+          { "id": 1604, "name": "Fabio", "position": "Lateral Direito" },
+          { "id": 1605, "name": "Reinaldo", "position": "Lateral Esquerdo" },
+          { "id": 1606, "name": "Mayk", "position": "Lateral Esquerdo" },
+          { "id": 1607, "name": "Jemerson", "position": "Zagueiro Direito" },
+          { "id": 1608, "name": "Rodrigo Ely", "position": "Zagueiro Esquerdo" },
+          { "id": 1609, "name": "Gustavo Martins", "position": "Zagueiro Direito" },
+          { "id": 1610, "name": "Kannemann", "position": "Zagueiro Esquerdo" }
+        ],
+        "midfielders": [
+          { "id": 1611, "name": "Mathías Villasanti", "position": "Volante" },
+          { "id": 1612, "name": "Dodi", "position": "Volante" },
+          { "id": 1613, "name": "Pepê", "position": "Meia Central" },
+          { "id": 1614, "name": "Edenilson", "position": "Meia Central" },
+          { "id": 1615, "name": "Franco Cristaldo", "position": "Meia Armador" },
+          { "id": 1616, "name": "Miguel Monsalve", "position": "Meia Atacante" }
+        ],
+        "forwards": [
+          { "id": 1617, "name": "Martin Braithwaite", "position": "Centroavante" },
+          { "id": 1618, "name": "Yeferson Soteldo", "position": "Ponta Esquerda" },
+          { "id": 1619, "name": "Cristian Pavón", "position": "Ponta Direita" },
+          { "id": 1620, "name": "Alexander Aravena", "position": "Ponta Esquerda" },
+          { "id": 1621, "name": "Matías Arezo", "position": "Centroavante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Clube Atlético Mineiro",
+        "short_name": "CAM",
+        "stadium": "Arena MRV",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 1701, "name": "Everson" },
+          { "id": 1702, "name": "Matheus Mendes" }
+        ],
+        "defenders": [
+          { "id": 1703, "name": "Renzo Saravia", "position": "Lateral Direito" },
+          { "id": 1704, "name": "Guilherme Arana", "position": "Lateral Esquerdo" },
+          { "id": 1705, "name": "Junior Alonso", "position": "Zagueiro Esquerdo" },
+          { "id": 1706, "name": "Battaglia", "position": "Zagueiro / Volante" },
+          { "id": 1707, "name": "Lyanco", "position": "Zagueiro Direito" },
+          { "id": 1708, "name": "Bruno Fuchs", "position": "Zagueiro Direito" }
+        ],
+        "midfielders": [
+          { "id": 1709, "name": "Fausto Vera", "position": "Volante" },
+          { "id": 1710, "name": "Otávio", "position": "Volante" },
+          { "id": 1711, "name": "Alan Franco", "position": "Meia Central" },
+          { "id": 1712, "name": "Gustavo Scarpa", "position": "Meia Atacante / Ponta" },
+          { "id": 1713, "name": "Bernard", "position": "Meia Armador" },
+          { "id": 1714, "name": "Zaracho", "position": "Meia Central" }
+        ],
+        "forwards": [
+          { "id": 1715, "name": "Hulk", "position": "Centroavante / Ponta" },
+          { "id": 1716, "name": "Paulinho", "position": "Segundo Atacante" },
+          { "id": 1717, "name": "Deyverson", "position": "Centroavante" },
+          { "id": 1718, "name": "Eduardo Vargas", "position": "Atacante" },
+          { "id": 1719, "name": "Alisson Santana", "position": "Ponta Direita" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Cruzeiro Esporte Clube",
+        "short_name": "CRU",
+        "stadium": "Mineirão",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 1801, "name": "Cássio" },
+          { "id": 1802, "name": "Anderson" }
+        ],
+        "defenders": [
+          { "id": 1803, "name": "William", "position": "Lateral Direito" },
+          { "id": 1804, "name": "Marlon", "position": "Lateral Esquerdo" },
+          { "id": 1805, "name": "Kaiki Bruno", "position": "Lateral Esquerdo" },
+          { "id": 1806, "name": "João Marcelo", "position": "Zagueiro Direito" },
+          { "id": 1807, "name": "Villalba", "position": "Zagueiro Esquerdo" },
+          { "id": 1808, "name": "Zé Ivaldo", "position": "Zagueiro Direito" }
+        ],
+        "midfielders": [
+          { "id": 1809, "name": "Walace", "position": "Volante" },
+          { "id": 1810, "name": "Matheus Henrique", "position": "Meia Central" },
+          { "id": 1811, "name": "Lucas Romero", "position": "Volante" },
+          { "id": 1812, "name": "Álvaro Barreal", "position": "Meia Atacante / Ponta" },
+          { "id": 1813, "name": "Matheus Pereira", "position": "Meia Armador" }
+        ],
+        "forwards": [
+          { "id": 1814, "name": "Kaio Jorge", "position": "Centroavante" },
+          { "id": 1815, "name": "Lautaro Díaz", "position": "Ponta / Atacante" },
+          { "id": 1816, "name": "Gabriel Veron", "position": "Ponta Direita" },
+          { "id": 1817, "name": "Rafa Silva", "position": "Centroavante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Botafogo de Futebol e Regatas",
+        "short_name": "BOT",
+        "stadium": "Nilton Santos",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 1901, "name": "John" },
+          { "id": 1902, "name": "Gatito Fernández" }
+        ],
+        "defenders": [
+          { "id": 1903, "name": "Vitinho", "position": "Lateral Direito" },
+          { "id": 1904, "name": "Alex Telles", "position": "Lateral Esquerdo" },
+          { "id": 1905, "name": "Cuiabano", "position": "Lateral Esquerdo" },
+          { "id": 1906, "name": "Alexander Barboza", "position": "Zagueiro Esquerdo" },
+          { "id": 1907, "name": "Adryelson", "position": "Zagueiro Direito" },
+          { "id": 1908, "name": "Bastos", "position": "Zagueiro Central" }
+        ],
+        "midfielders": [
+          { "id": 1909, "name": "Gregore", "position": "Volante" },
+          { "id": 1910, "name": "Marlon Freitas", "position": "Meia Central" },
+          { "id": 1911, "name": "Thiago Almada", "position": "Meia Armador" },
+          { "id": 1912, "name": "Savarino", "position": "Meia Atacante / Ponta" }
+        ],
+        "forwards": [
+          { "id": 1913, "name": "Igor Jesus", "position": "Centroavante" },
+          { "id": 1914, "name": "Luiz Henrique", "position": "Ponta Direita" },
+          { "id": 1915, "name": "Tiquinho Soares", "position": "Centroavante" },
+          { "id": 1916, "name": "Junior Santos", "position": "Ponta / Atacante" }
+        ]
+      }
+    },
+    {
+      "club_info": {
+        "full_name": "Clube de Regatas Vasco da Gama",
+        "short_name": "VAS",
+        "stadium": "São Januário",
+        "nationality": "Brasileiro",
+        "season": 2026
+      },
+      "squad": {
+        "goalkeepers": [
+          { "id": 2001, "name": "Léo Jardim" },
+          { "id": 2002, "name": "Keiller" }
+        ],
+        "defenders": [
+          { "id": 2003, "name": "Paulo Henrique", "position": "Lateral Direito" },
+          { "id": 2004, "name": "Lucas Piton", "position": "Lateral Esquerdo" },
+          { "id": 2005, "name": "João Victor", "position": "Zagueiro Direito" },
+          { "id": 2006, "name": "Léo Pelé", "position": "Zagueiro Esquerdo" },
+          { "id": 2007, "name": "Maicon", "position": "Zagueiro Direito" }
+        ],
+        "midfielders": [
+          { "id": 2008, "name": "Hugo Moura", "position": "Volante" },
+          { "id": 2009, "name": "Mateus Carvalho", "position": "Volante" },
+          { "id": 2010, "name": "Dimitri Payet", "position": "Meia Armador" },
+          { "id": 2011, "name": "Philippe Coutinho", "position": "Meia Atacante" }
+        ],
+        "forwards": [
+          { "id": 2012, "name": "Pablo Vegetti", "position": "Centroavante" },
+          { "id": 2013, "name": "David", "position": "Ponta Esquerda" },
+          { "id": 2014, "name": "Adson", "position": "Ponta Direita" },
+          { "id": 2015, "name": "Rayan", "position": "Atacante / Ponta" }
+        ]
+      }
+    }
+  ]
+};
+
+let userClub = null;
+let simSpeed = 5;
+let standings = [];
+
+        // Inicializar classificação
+        function initStandings() {
+            standings = GAME_DB.clubs.map(c => ({
+                name: c.club_info.full_name,
+                points: 0,
+                games: 0,
+                wins: 0
+            }));
+        }
+
+        function changeScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => {
+                s.classList.remove('active-screen');
+                s.classList.remove('fade-in');
+            });
+            const targetScreen = document.getElementById(`screen-${screenId}`);
+            targetScreen.classList.add('active-screen');
+            setTimeout(() => {
+                targetScreen.classList.add('fade-in');
+            }, 10);
+        }
+
+        function showLoading(seconds, nextScreen) {
+            changeScreen('loading');
+            const fill = document.getElementById('loading-fill');
+            const text = document.getElementById('loading-text');
+            text.innerText = seconds === 5 ? "Carregando menus..." : "Carregando base de dados...";
+            fill.style.width = '0%';
+            
+            let start = null;
+            function step(timestamp) {
+                if (!start) start = timestamp;
+                let progress = (timestamp - start) / (seconds * 1000);
+                fill.style.width = Math.min(progress * 100, 100) + '%';
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                } else {
+                    if(nextScreen === 'club-selection') populateClubs();
+                    if(nextScreen === 'lobby') updateLobby();
+                    changeScreen(nextScreen);
+                }
+            }
+            window.requestAnimationFrame(step);
+        }
+
+        function showAbout() { changeScreen('about'); }
+        function goToMenu() { changeScreen('menu'); }
+
+        function populateClubs() {
+            const list = document.getElementById('club-list');
+            list.innerHTML = '';
+            GAME_DB.clubs.forEach((club, index) => {
+                const div = document.createElement('div');
+                div.className = 'card card-hover p-4 text-center cursor-pointer transition-all duration-300';
+                div.innerHTML = `
+                    <p class="font-bold text-lg mb-2">${club.club_info.short_name}</p>
+                    <p class="text-sm text-slate-300">${club.club_info.full_name}</p>
+                `;
+                div.onclick = () => selectClub(club);
+                list.appendChild(div);
+            });
+        }
+
+        function selectClub(club) {
+            userClub = club;
+            initStandings();
+            showLoading(10, 'lobby');
+        }
+
+        function updateLobby() {
+            document.getElementById('user-club-name').innerText = userClub.club_info.full_name;
+            document.getElementById('user-stadium').innerText = userClub.club_info.stadium;
+        }
+
+        function showLobby() { changeScreen('lobby'); }
+
+        function showMyTeam() {
+            const list = document.getElementById('squad-list');
+            list.innerHTML = '';
+            
+            // Simular extração de todos os jogadores para lista única
+            const allPlayers = [
+                ...userClub.squad.goalkeepers,
+                ...userClub.squad.defenders,
+                ...userClub.squad.midfielders,
+                ...userClub.squad.forwards
+            ];
+
+            allPlayers.forEach(p => {
+                const item = document.createElement('div');
+                item.className = 'bg-slate-700 hover:bg-slate-600 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center rounded-lg transition gap-2';
+                item.innerHTML = `
+                    <span class="font-medium">${p.name}</span>
+                    <span class="text-blue-400 text-sm bg-slate-800 px-3 py-1 rounded-full">
+                        ${p.position || 'Goleiro'}
+                    </span>
+                `;
+                list.appendChild(item);
+            });
+            changeScreen('my-team');
+        }
+
+        function setFormation(f) {
+            alert(`Tática alterada para ${f}!`);
+        }
+
+        function showStandings() {
+            const body = document.getElementById('standings-body');
+            body.innerHTML = '';
+            // Sort por pontos
+            const sorted = [...standings].sort((a,b) => b.points - a.points);
+            sorted.forEach((team, i) => {
+                const row = document.createElement('tr');
+                row.className = team.name === userClub.club_info.full_name 
+                    ? "bg-blue-900/40 font-bold border-b border-blue-500/30" 
+                    : "border-b border-slate-700/30 hover:bg-slate-700/20";
+                row.innerHTML = `
+                    <td class="py-3 px-2 md:px-4 font-mono">${i+1}</td>
+                    <td class="py-3 px-2 md:px-4">${team.name}</td>
+                    <td class="py-3 px-2 md:px-4 font-bold text-center">${team.points}</td>
+                    <td class="py-3 px-2 md:px-4 text-center">${team.games}</td>
+                    <td class="py-3 px-2 md:px-4 text-center">${team.wins}</td>
+                `;
+                body.appendChild(row);
+            });
+            changeScreen('standings');
+        }
+
+        function openMatchMenu() {
+            const nextOpponent = getNextOpponent();
+            document.getElementById('matchup-info').innerHTML = `
+                <p class="text-sm text-slate-400 mb-2">Próxima Rodada</p>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-3 mt-2">
+                    <div class="text-center">
+                        <span class="text-lg font-bold">${userClub.club_info.short_name}</span>
+                        <p class="text-xs text-slate-400">${userClub.club_info.full_name}</p>
+                    </div>
+                    <span class="text-blue-500 font-bold text-xl">vs</span>
+                    <div class="text-center">
+                        <span class="text-lg font-bold">${nextOpponent.club_info.short_name}</span>
+                        <p class="text-xs text-slate-400">${nextOpponent.club_info.full_name}</p>
+                    </div>
+                </div>
+            `;
+            changeScreen('match-menu');
+        }
+
+        function getNextOpponent() {
+            const others = GAME_DB.clubs.filter(c => c.club_info.full_name !== userClub.club_info.full_name);
+            return others[Math.floor(Math.random() * others.length)];
+        }
+
+        function showSettings() { changeScreen('settings'); }
+
+        function setSimSpeed(s) {
+            simSpeed = s;
+            [5, 10, 15].forEach(val => {
+                const btn = document.getElementById(`speed-${val}`);
+                if (val === s) {
+                    btn.className = 'py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition';
+                } else {
+                    btn.className = 'py-3 bg-slate-700 hover:bg-slate-600 rounded-lg transition';
+                }
+            });
+        }
+
+        function startSimulation() {
+            const opponent = getNextOpponent();
+            document.getElementById('sim-home-team').innerText = userClub.club_info.short_name;
+            document.getElementById('sim-away-team').innerText = opponent.club_info.short_name;
+            document.getElementById('sim-stadium').innerText = userClub.club_info.stadium;
+            document.getElementById('sim-score').innerText = "0 - 0";
+            document.getElementById('sim-events').innerHTML = "<p class='text-green-400'>> O juiz apita o início do jogo!</p>";
+            document.getElementById('sim-footer').classList.add('hidden');
+            
+            changeScreen('sim');
+
+            let homeScore = 0;
+            let awayScore = 0;
+            let currentMinute = 0;
+            const extraTime = Math.floor(Math.random() * 5) + 2;
+            const totalMinutes = 90 + extraTime;
+            
+            const intervalTime = (simSpeed * 1000) / totalMinutes;
+
+            const simInterval = setInterval(() => {
+                currentMinute++;
+                
+                // Formatar relógio
+                let displayMin = currentMinute > 90 ? `90+${currentMinute-90}` : currentMinute;
+                document.getElementById('sim-timer').innerText = `${displayMin.toString().padStart(2, '0')}:00`;
+
+                // Eventos Aleatórios (Gols e Cartões)
+                if (Math.random() < 0.03) {
+                    const isHome = Math.random() > 0.5;
+                    const eventType = Math.random() > 0.3 ? 'GOL' : 'CARTÃO';
+                    const eventLog = document.createElement('div');
+                    
+                    if (eventType === 'GOL') {
+                        if (isHome) homeScore++; else awayScore++;
+                        document.getElementById('sim-score').innerText = `${homeScore} - ${awayScore}`;
+                        eventLog.className = "text-yellow-400 font-bold py-1";
+                        eventLog.innerHTML = `⚽ [${displayMin}'] <strong>GOL DO ${isHome ? userClub.club_info.short_name : opponent.club_info.short_name}!</strong>`;
+                    } else {
+                        eventLog.className = "text-red-400 py-1";
+                        eventLog.innerHTML = `🟨 [${displayMin}'] Cartão Amarelo para o ${isHome ? userClub.club_info.short_name : opponent.club_info.short_name}.`;
+                    }
+                    
+                    const eventsBox = document.getElementById('sim-events');
+                    eventsBox.appendChild(eventLog);
+                    eventsBox.scrollTop = eventsBox.scrollHeight;
+                }
+
+                if (currentMinute >= totalMinutes) {
+                    clearInterval(simInterval);
+                    const finalEvent = document.createElement('div');
+                    finalEvent.className = "text-green-400 font-bold py-2 border-t border-slate-700 mt-2";
+                    finalEvent.innerHTML = "> 🏁 Fim de jogo!";
+                    document.getElementById('sim-events').appendChild(finalEvent);
+                    document.getElementById('sim-footer').classList.remove('hidden');
+                    updateLeagueData(userClub.club_info.full_name, opponent.club_info.full_name, homeScore, awayScore);
+                }
+            }, intervalTime);
+        }
+
+        function updateLeagueData(userTeam, oppTeam, hScore, aScore) {
+            // Atualiza o jogo do player
+            standings.forEach(team => {
+                if (team.name === userTeam) {
+                    team.games++;
+                    if (hScore > aScore) { team.points += 3; team.wins++; }
+                    else if (hScore === aScore) team.points += 1;
+                }
+                if (team.name === oppTeam) {
+                    team.games++;
+                    if (aScore > hScore) { team.points += 3; team.wins++; }
+                    else if (hScore === aScore) team.points += 1;
+                }
+                
+                // Simular outros 18 times (confrontos aleatórios)
+                if (team.name !== userTeam && team.name !== oppTeam) {
+                    team.games++;
+                    const res = Math.random();
+                    if (res > 0.6) { team.points += 3; team.wins++; }
+                    else if (res > 0.3) { team.points += 1; }
+                }
+            });
+        }
+
+        function showMarket() {
+            alert("Mercado em desenvolvimento! Volte em breve.");
+        }
+
+        // Inicialização
+        window.onload = () => {
+            // Forçar redimensionamento inicial
+            window.dispatchEvent(new Event('resize'));
+        };
+
+        // Detectar orientação do dispositivo
+        window.addEventListener('resize', function() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        });
+    </script>
+</body>
+</html>
